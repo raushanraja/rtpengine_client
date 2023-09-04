@@ -3,8 +3,7 @@ from config.env import env
 from client import AioHttpClient
 import logging
 
-from commands import CallList, CommandBase, CommandEnum, CommandFactory
-from encoder import decode, encode
+from commands import CallList, CommandEnum, CommandFactory
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -17,7 +16,7 @@ async def main():
     headers = {"content-type": "application/x-rtpengine-ng"}
     client = AioHttpClient(env.RTPENGINE_URL, headers=headers)
 
-    command:CallList = cf.get_command(CommandEnum.CALL_LIST)
+    command: CallList = cf.get_command(CommandEnum.CALL_LIST)
     if command:
         response = await client.post(command.build())
         log.info(command.decode(response))
