@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 
-from encoder import encode
+
+from encoder import encode, decode as decoder
+from responses import CallListResult, PingResult
 
 
 class CommandEnum(Enum):
@@ -38,13 +40,23 @@ class CommandBase(ABC):
     def build(self, *args, **kwargs):
         raise NotImplementedError()
 
+    @abstractmethod
+    def decode(self, data):
+        raise NotImplementedError()
+
 
 class CallList(CommandBase):
     command = CommandEnum.CALL_LIST
 
-    def build(self):
-        data = {'command': self.command.value}
+    def build(self, limit=32):
+        data = {'command': self.command.value, 'limit': limit}
         return encode(data)
+
+    def decode(self, data) -> CallListResult:
+        cookie, decoded_data = decoder(data)
+        result = decoded_data.get('result')
+        calls = decoded_data.get('calls')
+        return CallListResult(cookie, result, data, decoded_data, calls)
 
 
 class Ping(CommandBase):
@@ -54,6 +66,11 @@ class Ping(CommandBase):
         data = {'command': self.command.value}
         return encode(data)
 
+    def decode(self, data):
+        cookie, decoded_data = decoder(data)
+        result = decoded_data.get('result')
+        return PingResult(cookie, result, data, decoded_data)
+
 
 class Statistics(CommandBase):
     command = CommandEnum.STATISTICS
@@ -61,6 +78,9 @@ class Statistics(CommandBase):
     def build(self):
         data = {'command': self.command.value}
         return encode(data)
+
+    def decode(self, data):
+        pass
 
 
 class CommandFactory:

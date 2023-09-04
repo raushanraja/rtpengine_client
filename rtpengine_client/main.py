@@ -17,15 +17,21 @@ async def main():
     headers = {"content-type": "application/x-rtpengine-ng"}
     client = AioHttpClient(env.RTPENGINE_URL, headers=headers)
 
-    command = cf.get_command(CommandEnum.CALL_LIST)
+    command:CallList = cf.get_command(CommandEnum.CALL_LIST)
     if command:
         response = await client.post(command.build())
-        log.info(decode(response))
+        log.info(command.decode(response))
 
     command = cf.get_command(CommandEnum.PING)
     if command:
         response = await client.post(command.build())
-        log.info(decode(response))
+        log.info(command.decode(response))
+
+    # command = cf.get_command(CommandEnum.STATISTICS)
+    # if command:
+    #     response = await client.post(command.build())
+    #     log.info(decode(response))
+
     await client.close()
 
 if __name__ == "__main__":
