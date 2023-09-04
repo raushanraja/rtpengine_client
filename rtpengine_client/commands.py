@@ -55,10 +55,19 @@ class Ping(CommandBase):
         return encode(data)
 
 
+class Statistics(CommandBase):
+    command = CommandEnum.STATISTICS
+
+    def build(self):
+        data = {'command': self.command.value}
+        return encode(data)
+
+
 class CommandFactory:
     commands = {
         CommandEnum.PING: Ping(),
-        CommandEnum.CALL_LIST: CallList()
+        CommandEnum.CALL_LIST: CallList(),
+        CommandEnum.STATISTICS: Statistics()
     }
 
     def get_command(self, command_type: CommandEnum):
